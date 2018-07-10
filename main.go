@@ -44,5 +44,5 @@ func main() {
 		port = "8080"
 	}
 
-	router.Run(os.Getenv(":"+port))
+	router.Run()
 }
