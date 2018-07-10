@@ -23,7 +23,10 @@
 #   non-go = false
 #   go-tests = true
 #   unused-packages = true
-
+[metadata.heroku]
+  root-package = "arcane-badlands-11022"
+  go-version = "go1.10.2"
+  install = [ "./..." ]
 
 [prune]
   go-tests = true

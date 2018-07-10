@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"github.com/joaquinicolas/xmen"
 	"fmt"
+	"os"
 )
 
 type XMen struct {
@@ -34,5 +35,11 @@ func main() {
 		isMutant := xmen.IsMutant(dna)
 		c.JSON(http.StatusOK, gin.H{"isMutant": isMutant})
 	})
-	router.Run()
+
+	port := os.Getenv("PORT") // Heroku provides the port to bind to
+	if port == "" {
+		port = "8080"
+	}
+
+	router.Run(os.Getenv(":"+port))
 }
