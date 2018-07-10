@@ -13,6 +13,9 @@ type XMen struct {
 }
 func main() {
 	router := gin.Default()
+	router.GET("/", func(context *gin.Context) {
+		context.String(http.StatusOK,"It's works!")
+	})
 	router.POST("/mutant", func(c *gin.Context) {
 		var mutant XMen
 		if err := c.BindJSON(&mutant); err != nil {
