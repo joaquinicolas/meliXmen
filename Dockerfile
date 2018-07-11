@@ -1,18 +1,21 @@
+FROM golang AS builder
 
-FROM golang:alpine as builder
+# Download and install the latest release of dep
+ADD https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 /usr/bin/dep
+RUN chmod +x /usr/bin/dep
 
-RUN adduser -D -g '' appuser
-COPY . $GOPATH/src/github.com/joaquinicolas/meliXmen
+# Copy the code from the host and compile it
 WORKDIR $GOPATH/src/github.com/joaquinicolas/meliXmen
+COPY Gopkg.toml Gopkg.lock ./
+RUN dep ensure --vendor-only
+COPY . ./
+RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix nocgo -o /app .
 
-
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /app/meliXmen
-
-FROM scratch
-WORKDIR /app
-COPY --from=builder /etc/passwd /etc/passwd
-
-COPY --from=builder /app/meliXmen /app/
-USER appuser
-CMD ls /app/
-CMD /app/meliXmen
+FROM alpine:3.4
+RUN apk --update upgrade && \
+    apk add sqlite && \
+    rm -rf /var/cache/apk/*
+# See http://stackoverflow.com/questions/34729748/installed-go-binary-not-found-in-path-on-alpine-linux-docker
+RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
+COPY --from=builder /app ./
+ENTRYPOINT ["./app"]

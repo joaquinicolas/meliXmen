@@ -1,0 +1,8 @@
+.idea
+*.iml
+vendor
+heroku
+Makefile
+meliXmen.iml
+Procfile
+xmen.db
